@@ -84,7 +84,7 @@ public class Benchmark {
                 (double) avgGet + " \t| " +
                 compressed.length + " ints \t| " +
                 bitsSaved + " bits (" +
-                percentSaved);
+                percentSaved + "%)");
     }
 
     public static int[] generateUniform(int size, int maxValue) {
