@@ -17,6 +17,11 @@ public class Main {
             System.out.println("5. Quitter");
             System.out.print("\nVotre choix: ");
 
+            if (!scanner.hasNextInt()) {
+                System.out.println("\nErreur: veuillez entrer un nombre valide");
+                scanner.nextLine(); // Consommer l'entrée invalide
+                continue;
+            }
             int choice = scanner.nextInt();
 
             if (choice == 1) {
@@ -81,6 +86,11 @@ public class Main {
             System.out.println("4. Revenir au menu principal");
             System.out.print("\nChoix: ");
 
+            if (!scanner.hasNextInt()) {
+                System.out.println("\nErreur: veuillez entrer un nombre valide");
+                scanner.nextLine(); // Consommer l'entrée invalide
+                continue;
+            }
             int action = scanner.nextInt();
 
             if (action == 1) {
@@ -100,6 +110,12 @@ public class Main {
 
             } else if (action == 2) {
                 System.out.print("\nIndex à récupérer (0 à " + (array.length - 1) + "): ");
+
+                if (!scanner.hasNextInt()) {
+                    System.out.println("\nErreur: veuillez entrer un nombre valide");
+                    scanner.nextLine(); // Consommer l'entrée invalide
+                    continue;
+                }
                 int index = scanner.nextInt();
 
                 try {

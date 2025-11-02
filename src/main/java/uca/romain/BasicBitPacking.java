@@ -66,6 +66,10 @@ public class BasicBitPacking implements BitPacking {
         int arraySize = extractArraySize(compressedArray);
         int bitsNeeded = extractBitsNeeded(compressedArray);
 
+        return get(compressedArray, i, arraySize, bitsNeeded);
+    }
+
+    private int get(int[] compressedArray, int i, int arraySize, int bitsNeeded) {
         if (i < 0) {
             throw new IndexOutOfBoundsException("L'index ne peut pas être négatif: " + i);
         }
@@ -80,10 +84,8 @@ public class BasicBitPacking implements BitPacking {
         int mask = (1 << bitsNeeded) - 1;
 
         if (bitOffset + bitsNeeded <= 32) {
-            // Tout dans un seul int
             return (compressedArray[arrayIndex] >>> bitOffset) & mask;
         } else {
-            // Réparti sur deux ints
             int bitsInFirst = 32 - bitOffset;
             int firstPart = (compressedArray[arrayIndex] >>> bitOffset) & ((1 << bitsInFirst) - 1);
             int secondPart = compressedArray[arrayIndex + 1] & ((1 << (bitsNeeded - bitsInFirst)) - 1);
@@ -104,23 +106,8 @@ public class BasicBitPacking implements BitPacking {
         int bitsNeeded = extractBitsNeeded(compressedArray);
         int[] decompressed = new int[arraySize];
 
-        int mask = (1 << bitsNeeded) - 1;
-
         for (int i = 0; i < arraySize; i++) {
-            int bitPos = i * bitsNeeded;
-            int arrayIndex = (bitPos / 32) + 1;
-            int bitOffset = bitPos % 32;
-
-            if (bitOffset + bitsNeeded <= 32) {
-                // Tout dans un seul int
-                decompressed[i] = (compressedArray[arrayIndex] >>> bitOffset) & mask;
-            } else {
-                // Réparti sur deux ints
-                int bitsInFirst = 32 - bitOffset;
-                int firstPart = (compressedArray[arrayIndex] >>> bitOffset) & ((1 << bitsInFirst) - 1);
-                int secondPart = compressedArray[arrayIndex + 1] & ((1 << (bitsNeeded - bitsInFirst)) - 1);
-                decompressed[i] = firstPart | (secondPart << bitsInFirst);
-            }
+            decompressed[i] = get(compressedArray, i, arraySize, bitsNeeded);
         }
 
         return decompressed;
