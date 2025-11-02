@@ -34,12 +34,12 @@ cd SoftwareEngineering
 
 ### 2. Compiler le projet
 ```bash
-javac -d out $(find ./src -name "*.java")
+mvn clean compile
 ```
 
 ### 3. Lancer le programme
 ```bash
-java -cp out uca.romain.Main
+mvn exec:java -Dexec.mainClass="uca.romain.Main"
 ```
 
 ---
