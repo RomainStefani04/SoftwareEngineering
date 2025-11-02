@@ -54,7 +54,6 @@ public class OverflowBitPacking implements BitPacking {
         // Métadonnées optimisées: arraySize sur 26 bits (bits 6-31), bitsNeeded sur 6 bits (bits 0-5)
         result[0] = (arraySize << 6) | (bitsNeeded & 0x3F);
 
-        // Compression avec 1 boucle et 2 index
         int currentOverflowIndex = 0;
 
         for (int i = 0; i < arraySize; i++) {
@@ -161,10 +160,8 @@ public class OverflowBitPacking implements BitPacking {
         int bitOffset = bitPos & 31;
 
         if (bitOffset + numBits <= 32) {
-            // Cas simple : bits dans un seul int
             return (array[arrayIndex] >>> bitOffset) & ((1 << numBits) - 1);
         } else {
-            // Cas complexe : bits répartis sur deux ints
             int bitsInFirst = 32 - bitOffset;
             return ((array[arrayIndex] >>> bitOffset) & ((1 << bitsInFirst) - 1))
                     | ((array[arrayIndex + 1] & ((1 << (numBits - bitsInFirst)) - 1)) << bitsInFirst);
@@ -209,7 +206,6 @@ public class OverflowBitPacking implements BitPacking {
                     ((long) overflowCount <= (1L << currentBitSize));
 
             if (indexFits) {
-                // IMPORTANT: +1 pour le bit de flag
                 long baseSize = (long) totalElements * (1 + currentBitSize);
                 long overflowSize = (long) overflowCount * 32;
                 long totalSize = baseSize + overflowSize;

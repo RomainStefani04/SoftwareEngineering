@@ -26,7 +26,6 @@ public class NoOverlapBitPacking implements BitPacking {
         }
         int maxBitsNeeded = maxValue == 0 ? 1 : 32 - Integer.numberOfLeadingZeros(maxValue);
 
-        // Calcul de la taille : 1 seule variable temporaire
         int elementsPerInt = 32 / maxBitsNeeded;
         int[] result = new int[1 + (arraySize + elementsPerInt - 1) / elementsPerInt];
 
@@ -62,6 +61,10 @@ public class NoOverlapBitPacking implements BitPacking {
         int arraySize = extractArraySize(compressedArray);
         int maxBitsNeeded = extractBitsNeeded(compressedArray);
 
+        return get(compressedArray, i, arraySize, maxBitsNeeded);
+    }
+
+    private int get(int[] compressedArray, int i, int arraySize, int maxBitsNeeded) {
         if (i < 0) {
             throw new IndexOutOfBoundsException("L'index ne peut pas être négatif: " + i);
         }
@@ -91,29 +94,8 @@ public class NoOverlapBitPacking implements BitPacking {
         int maxBitsNeeded = extractBitsNeeded(compressedArray);
         int[] decompressed = new int[arraySize];
 
-        int elementsPerInt = 32 / maxBitsNeeded;
-        int mask = (1 << maxBitsNeeded) - 1;
-        int fullInts = arraySize / elementsPerInt;
-        int remaining = arraySize % elementsPerInt;
-
-        int outputIndex = 0;
-
-        // Boucle principale optimale (aucun branchement)
-        for (int arrayIndex = 1; arrayIndex <= fullInts; arrayIndex++) {
-            int bitOffset = 0;
-            for (int j = 0; j < elementsPerInt; j++) {
-                decompressed[outputIndex++] = (compressedArray[arrayIndex] >>> bitOffset) & mask;
-                bitOffset += maxBitsNeeded;
-            }
-        }
-
-        // Dernier int partiel
-        if (remaining > 0) {
-            int bitOffset = 0;
-            for (int j = 0; j < remaining; j++) {
-                decompressed[outputIndex++] = (compressedArray[fullInts + 1] >>> bitOffset) & mask;
-                bitOffset += maxBitsNeeded;
-            }
+        for (int i = 0; i < arraySize; i++) {
+            decompressed[i] = get(compressedArray, i, arraySize, maxBitsNeeded);
         }
 
         return decompressed;
