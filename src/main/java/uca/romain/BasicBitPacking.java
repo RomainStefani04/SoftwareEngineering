@@ -29,7 +29,7 @@ public class BasicBitPacking implements BitPacking {
 
         // Calculer la taille du tableau compressé
         long totalBits = (long) arraySize * bitsNeeded;
-        int numInts = (int) ((totalBits + 31) / 32);
+        int numInts = (int) ((totalBits + 31) >> 5);
         int[] result = new int[1 + numInts];
 
         // Métadonnées optimisées: arraySize sur 26 bits (bits 6-31), bitsNeeded sur 6 bits (bits 0-5)
@@ -38,8 +38,8 @@ public class BasicBitPacking implements BitPacking {
         // Compression avec possibilité de chevauchement
         for (int i = 0; i < arraySize; i++) {
             int bitPos = i * bitsNeeded;
-            int arrayIndex = (bitPos / 32) + 1;
-            int bitOffset = bitPos % 32;
+            int arrayIndex = (bitPos >> 5) + 1;
+            int bitOffset = bitPos & 31;
 
             if (bitOffset + bitsNeeded <= 32) {
                 // Tout tient dans un seul int
@@ -78,8 +78,8 @@ public class BasicBitPacking implements BitPacking {
         }
 
         int bitPos = i * bitsNeeded;
-        int arrayIndex = (bitPos / 32) + 1;
-        int bitOffset = bitPos % 32;
+        int arrayIndex = (bitPos >> 5) + 1;
+        int bitOffset = bitPos & 31;
 
         int mask = (1 << bitsNeeded) - 1;
 
